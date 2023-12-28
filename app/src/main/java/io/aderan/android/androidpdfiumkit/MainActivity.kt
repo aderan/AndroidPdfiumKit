@@ -1,25 +1,33 @@
 package io.aderan.android.androidpdfiumkit
 
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.os.ParcelFileDescriptor
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import com.shockwave.pdfium.PdfiumCore
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import io.aderan.android.androidpdfiumkit.theme.AndroidPdfiumKitTheme
-import java.util.UUID
-
 
 class MainActivity : ComponentActivity() {
+    private val pages = listOf(
+        "PDFView" to PDFViewActivity::class.java,
+        "PDFText" to PDFTextActivity::class.java,
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -28,54 +36,30 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    LazyColumn {
+                        items(pages) { (title, clazz) ->
+                            Card(
+                                Modifier
+                                    .padding(16.dp)
+                                    .clickable {
+                                        startActivity(Intent(this@MainActivity, clazz))
+                                    }) {
+                                Box(
+                                    modifier = Modifier
+                                        .height(200.dp)
+                                        .fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = title,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-
-    TextButton(onClick = { runTestPdf(context) }) {
-        Text(
-            text = "Hello $name!",
-            modifier = modifier
-        )
-    }
-}
-
-private fun runTestPdf(context: Context) {
-    Thread {
-        val file = FileUtil.fileFromAsset(context, "ocr.pdf")
-
-        val core = PdfiumCore(context)
-        val document =
-            core.newDocument(ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY))
-        val pageCount = core.getPageCount(document)
-
-        val path = FileUtil.getInternalFilePath(context, UUID.randomUUID().toString() + ".txt")
-        println("PdfiumCore test $pageCount")
-        println("PdfiumCore test $path")
-
-        val startTime = System.currentTimeMillis()
-        core.openPage(document, 0, pageCount - 1)
-        for (i in 0 until pageCount) {
-            FileUtil.writeStringToFile(path, "--- Page $i ---\n")
-            FileUtil.writeStringToFile(path, core.getPageText2(document, i))
-        }
-        val endTime = System.currentTimeMillis()
-        println("PdfiumCore test cost time: ${endTime - startTime}ms")
-        core.closeDocument(document)
-    }.start()
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AndroidPdfiumKitTheme {
-        Greeting("Android")
     }
 }

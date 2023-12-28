@@ -499,43 +499,20 @@ public class PdfiumCore {
             if (pagePtr == null) {
                 return null;
             }
-            long textPagePtr = nativeTextLoadPage(pagePtr);
-
-            StringBuilder sb = new StringBuilder();
-            int countRects = nativeTextCountRects(textPagePtr, 0, 1000000);
-            // int count = nativeTextCountChars(textPagePtr);
-            for (int j = 0; j < countRects; j++) {
-                RectF rectF = nativeTextGetRect(textPagePtr, j);
-                int count = nativeTextGetBoundedText(textPagePtr, rectF.left, rectF.top, rectF.right, rectF.bottom, 0,
-                    null);
-                char[] buf = new char[count];
-                int c = nativeTextGetBoundedText(textPagePtr, rectF.left, rectF.top, rectF.right, rectF.bottom, count,
-                    buf);
-                sb.append(buf, 0, c);
-            }
-            nativeTextClosePage(textPagePtr);
-            return sb.toString();
-        }
-    }
-
-    public String getPageText2(PdfDocument doc, int pageIndex) {
-        Long pagePtr;
-        synchronized (lock) {
-            pagePtr = doc.mNativePagesPtr.get(pageIndex);
-            if (pagePtr == null) {
-                return null;
-            }
 
             long textPagePtr = nativeTextLoadPage(pagePtr);
-            int textCount = nativeTextCountChars(textPagePtr) + 1;
+            int textCount = nativeTextCountChars(textPagePtr);
+
+            if (textCount == 0) {
+                nativeTextClosePage(textPagePtr);
+                return "";
+            }
+
             char[] buf = new char[textCount];
             int c = nativeTextGetText(textPagePtr, 0, textCount, buf);
-
-            StringBuilder sb = new StringBuilder();
-            sb.append(buf, 0, c);
-
             nativeTextClosePage(textPagePtr);
-            return sb.toString();
+
+            return new String(buf, 0, c);
         }
     }
 }

@@ -186,7 +186,7 @@ JNI_FUNC(jlong, PdfiumCore, nativeOpenDocument)(JNI_ARGS, jint fd, jstring passw
     size_t fileLength = (size_t)getFileSize(fd);
     if(fileLength <= 0) {
         jniThrowException(env, "java/io/IOException",
-                                    "File is empty");
+                          "File is empty");
         return -1;
     }
 
@@ -735,11 +735,13 @@ JNI_FUNC(jint, PdfiumCore, nativeTextGetText)(JNI_ARGS,
                                               jcharArray result) {
     FPDF_TEXTPAGE textPage = reinterpret_cast<FPDF_TEXTPAGE>(textPagePtr);
 
-    auto cResult = (unsigned short *) malloc(count * sizeof(unsigned short));
-    int retCount = FPDFText_GetText(textPage, startIndex, count, cResult);
-    env->SetCharArrayRegion(result, 0, count, (jchar *) cResult);
+    auto cResult = static_cast<unsigned short*>(malloc((count + 1) * sizeof(unsigned short)));
+    int retCount = FPDFText_GetText(textPage, startIndex, (count + 1), cResult);
+
+    env->SetCharArrayRegion(result, 0, count < retCount ? count : retCount, reinterpret_cast<jchar*>(cResult));
     free(cResult);
-    return retCount;
+
+    return retCount - 1;
 }
 
 JNI_FUNC(jint, PdfiumCore, nativeTextGetBoundedText)(JNI_ARGS,
