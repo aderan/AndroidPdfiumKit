@@ -56,12 +56,20 @@ class DocumentFile {
     FPDF_DOCUMENT pdfDocument = NULL;
     size_t fileSize;
 
+    public:
+    jbyte *cDataCopy = NULL;
+
     DocumentFile() { initLibraryIfNeed(); }
     ~DocumentFile();
 };
 DocumentFile::~DocumentFile(){
     if(pdfDocument != NULL){
         FPDF_CloseDocument(pdfDocument);
+    }
+
+    if(cDataCopy != NULL){
+      free(cDataCopy);
+      cDataCopy = NULL;
     }
 
     destroyLibraryIfNeed();
@@ -239,13 +247,11 @@ JNI_FUNC(jlong, PdfiumCore, nativeOpenMemDocument)(JNI_ARGS, jbyteArray data, js
         cpassword = env->GetStringUTFChars(password, NULL);
     }
 
-    jbyte *cData = env->GetByteArrayElements(data, NULL);
     int size = (int) env->GetArrayLength(data);
-    jbyte *cDataCopy = new jbyte[size];
-    memcpy(cDataCopy, cData, size);
+    auto *cDataCopy = new jbyte[size];
+    env->GetByteArrayRegion(data, 0, size, cDataCopy);
     FPDF_DOCUMENT document = FPDF_LoadMemDocument( reinterpret_cast<const void*>(cDataCopy),
-                                                          size, cpassword);
-    env->ReleaseByteArrayElements(data, cData, JNI_ABORT);
+                                                   size, cpassword);
 
     if(cpassword != NULL) {
         env->ReleaseStringUTFChars(password, cpassword);
@@ -270,6 +276,7 @@ JNI_FUNC(jlong, PdfiumCore, nativeOpenMemDocument)(JNI_ARGS, jbyteArray data, js
     }
 
     docFile->pdfDocument = document;
+    docFile->cDataCopy = cDataCopy;
 
     return reinterpret_cast<jlong>(docFile);
 }
