@@ -17,7 +17,7 @@ set_target_properties(pdfium PROPERTIES IMPORTED_LOCATION ${LOCAL_PATH}/lib/${AN
 add_library(jniPdfium SHARED ${LOCAL_PATH}/src/mainJNILib.cpp)
 
 # Use target_compile_definitions instead of add_definitions
-target_compile_definitions(jniPdfium PUBLIC -DHAVE_PTHREADS )
+target_compile_definitions(jniPdfium PUBLIC -DHAVE_PTHREADS)
 
 # Include directories
 target_include_directories(jniPdfium PUBLIC
