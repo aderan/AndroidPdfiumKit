@@ -79,6 +79,6 @@ dependencies {
 
     implementation(project(":pdfium"))
     implementation(project(":pdfviewer"))
-    // implementation 'com.github.aderan.AndroidPdfiumKit:pdfium:0.1.0'
-    // implementation 'com.github.aderan.AndroidPdfiumKit:pdfviewer:0.1.0'
+    // implementation "com.github.aderan.AndroidPdfiumKit:pdfium:0.1.1"
+    // implementation "com.github.aderan.AndroidPdfiumKit:pdfviewer:0.1.1"
 }

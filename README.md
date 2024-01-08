@@ -11,9 +11,24 @@ This project started to extract text from PDFs, as [AndroidPdfViewer](https://gi
 and [PdfiumAndroid](https://github.com/mshockwave/PdfiumAndroid) stopped receiving updates.
 Submitting a PR for these projects became impractical, so a new maintenance-focused initiative was launched.
 
-## PdfiumAndroid
+## Usage
 
-## AndroidPdfViewer
+Download the latest JAR or depend via Jitpack
+
+```groovy
+// settings.gradle
+dependencyResolutionManagement {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+// build.gradle
+dependencies {
+    implementation "com.github.aderan.AndroidPdfiumKit:pdfium:0.1.1"
+    implementation "com.github.aderan.AndroidPdfiumKit:pdfviewer:0.1.1"
+}
+```
 
 ## References
 
