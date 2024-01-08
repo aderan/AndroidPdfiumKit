@@ -65,10 +65,11 @@ class DocumentFile {
 DocumentFile::~DocumentFile() {
     if (pdfDocument != NULL) {
         FPDF_CloseDocument(pdfDocument);
+        pdfDocument = NULL;
     }
 
     if (cDataCopy != NULL) {
-        free(cDataCopy);
+        delete (cDataCopy);
         cDataCopy = NULL;
     }
 
@@ -266,8 +267,7 @@ Java_com_shockwave_pdfium_PdfiumCore_nativeOpenMemDocument(JNIEnv *env,
     int size = (int) env->GetArrayLength(data);
     auto *cDataCopy = new jbyte[size];
     env->GetByteArrayRegion(data, 0, size, cDataCopy);
-    FPDF_DOCUMENT
-        document =
+    FPDF_DOCUMENT document =
         FPDF_LoadMemDocument(reinterpret_cast<const void *>(cDataCopy),
                              size, cpassword);
 
