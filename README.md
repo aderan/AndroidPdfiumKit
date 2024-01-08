@@ -25,8 +25,8 @@ dependencyResolutionManagement {
 
 // build.gradle
 dependencies {
-    implementation "com.github.aderan.AndroidPdfiumKit:pdfium:0.1.1"
-    implementation "com.github.aderan.AndroidPdfiumKit:pdfviewer:0.1.1"
+    implementation "com.github.aderan.AndroidPdfiumKit:pdfium:0.1.2"
+    implementation "com.github.aderan.AndroidPdfiumKit:pdfviewer:0.1.2"
 }
 ```
 
